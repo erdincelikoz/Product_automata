@@ -5,10 +5,15 @@
 #include "DFA.h"
 #include "json.hpp"
 #include <iomanip>
+#include <string>
 using namespace std;
 using json = nlohmann::json;
 
-DFA::DFA(){}
+DFA::DFA(string filename){}
+
+DFA DFA::product(DFA dfa1, DFA dfa2, bool intersection_union) {
+
+}
 
 void DFA::print() {
 

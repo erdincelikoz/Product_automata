@@ -18,7 +18,12 @@ struct Transition {
 
 class DFA {
 public:
-    DFA();
+    DFA(string filename);
+
+    DFA(const DFA & dfa, const DFA & dfa2, bool cond);
+
+    DFA product(DFA dfa1, DFA dfa2, bool intersection_union);
+
     void print();
 
     void setAlphabet(vector<string> newalphabet) {
