@@ -35,6 +35,7 @@ DFA::DFA(string filename) {
             setStartstate(inputstates[i]);
         }
     }
+    setEndstates(acceptstates);
     setStates(parsedstates);
 
     vector<json> inputtransitions = j["transitions"];
@@ -161,7 +162,7 @@ DFA::DFA(DFA dfa1, DFA dfa2, bool intersection_union) {
                     }
                     getStates().push_back(nextproductstate);
                     visited.push_back(nextproductname);
-                    tovisit.push(pair(firstnext, secondnext));
+                    tovisit.push({firstnext, secondnext});
                 }
                 Transition nexttransition;
                 nexttransition.from = currentname;
@@ -177,26 +178,35 @@ DFA::DFA(DFA dfa1, DFA dfa2, bool intersection_union) {
 void DFA::print() {
 
     json j2;
-    j2["type"]     = "DFA";
+    j2["type"]= "DFA";
     j2["alphabet"] = getAlphabet();
-
+    vector<State> sortedStates = getStates();
+    sort(sortedStates.begin(), sortedStates.end(), [](State a, State b) {
+        return a.name < b.name;
+    });
     j2["states"] = json::array();
-    for (State state : getStates()) {
+    for (State state : sortedStates) {
         json s;
         s["name"]     = state.name;
         s["starting"] = state.starting;
         s["accepting"]= state.accepting;
         j2["states"].push_back(s);
     }
+    vector<Transition> sortedTransitions = getTransitions();
+    sort(sortedTransitions.begin(), sortedTransitions.end(), [](Transition a, Transition b) {
+        if (a.from == b.from) {
+            return a.input < b.input;
+        }
+        return a.from < b.from;
+    });
 
     j2["transitions"] = json::array();
-    for (Transition transition : getTransitions()) {
+    for (Transition transition : sortedTransitions) {
         json t;
         t["from"]  = transition.from;
         t["to"]    = transition.to;
         t["input"] = transition.input;
         j2["transitions"].push_back(t);
     }
-
     cout << setw(4) << j2 << endl;
 }
